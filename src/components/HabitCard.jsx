@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { theme } from '../styles/theme';
 
 const HabitCard = ({ habit, onComplete, isLastHabit, completedCount }) => {
   const handleComplete = () => {
+    console.log('🔥 HabitCard handleComplete called for:', habit.id);
+    console.log('onComplete function:', onComplete);
     onComplete(habit.id);
     
     if (isLastHabit && completedCount === 4) {
@@ -14,33 +17,78 @@ const HabitCard = ({ habit, onComplete, isLastHabit, completedCount }) => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && !habit.completed) {
+      e.preventDefault();
+      handleComplete();
+    }
+  };
+
   return (
     <motion.div
-      className={`p-4 rounded-lg shadow-md ${
-        habit.completed 
-          ? 'bg-green-100 border-2 border-green-300' 
-          : 'bg-white border-2 border-gray-200'
-      }`}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      style={{
+        padding: '16px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        background: habit.completed 
+          ? `linear-gradient(135deg, ${theme.colors.success.light}20 0%, ${theme.colors.success.main}10 100%)`
+          : 'white',
+        border: `2px solid ${habit.completed ? theme.colors.success.light : theme.colors.neutral[200]}`,
+        cursor: habit.completed ? 'default' : 'pointer'
+      }}
+      whileHover={habit.completed ? {} : { scale: 1.02 }}
+      whileTap={habit.completed ? {} : { scale: 0.98 }}
+      onClick={() => {
+        console.log('🖱️ BASIC CLICK TEST - This should always show');
+        console.log('Habit data:', habit);
+        console.log('Completed status:', habit.completed);
+        
+        if (!habit.completed) {
+          console.log('Calling handleComplete...');
+          handleComplete();
+        } else {
+          console.log('Habit already completed, not calling handleComplete');
+        }
+      }}
+      onKeyDown={handleKeyDown}
+      tabIndex={habit.completed ? -1 : 0}
+      role="button"
+      aria-label={`${habit.name} - ${habit.completed ? 'Completed' : 'Click to complete'}`}
+      aria-pressed={habit.completed}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <span className="text-2xl">{habit.icon}</span>
-          <span className="font-medium text-gray-800">{habit.name}</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span 
+            style={{ fontSize: '24px' }}
+            role="img"
+            aria-label={`${habit.name} icon`}
+          >
+            {habit.icon}
+          </span>
+          <span style={{
+            fontWeight: '500',
+            color: habit.completed ? theme.colors.success.dark : theme.colors.neutral[800],
+            fontSize: '16px'
+          }}>
+            {habit.name}
+          </span>
         </div>
         
-        <button
-          onClick={handleComplete}
-          disabled={habit.completed}
-          className={`px-4 py-2 rounded-full font-medium transition-colors ${
-            habit.completed
-              ? 'bg-green-500 text-white cursor-not-allowed'
-              : 'bg-blue-500 hover:bg-blue-600 text-white'
-          }`}
-        >
-          {habit.completed ? '✓ Done' : 'Mark Done'}
-        </button>
+        <div style={{
+          padding: '8px 16px',
+          borderRadius: '20px',
+          fontSize: '14px',
+          fontWeight: '600',
+          background: habit.completed 
+            ? theme.colors.success.main 
+            : theme.colors.primary.main,
+          color: 'white',
+          minWidth: '80px',
+          textAlign: 'center',
+          opacity: habit.completed ? 0.8 : 1
+        }}>
+          {habit.completed ? '✓ Done' : 'Complete'}
+        </div>
       </div>
     </motion.div>
   );

@@ -11,8 +11,14 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-        <div className="text-white text-xl">Loading...</div>
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%)'
+      }}>
+        <div style={{ color: '#667eea', fontSize: '20px' }}>Loading...</div>
       </div>
     );
   }
